@@ -60,7 +60,7 @@ public:
 		return (x == 0.0f && y == 0.0f && z == 0.0f);
 	}
 	VECT distance_to(const Vector3 &vec) const {
-		return sqrt((x-vect.x) * (x-vec.x) + ((y - vect.y) * (y - vect.y)) + ((z - vect.z) * (z - vect.z)));
+		return ((x-vec.x) * (x-vec.x) + ((y - vec.y) * (y - vec.y)) + ((z - vec.z) * (z - vec.z)));
 	}
 
 };

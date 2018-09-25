@@ -8,7 +8,7 @@ C++ Homework
 	-class String{
 		String a;
 		String b("hello");
-		Stringc(b);
+		String c(b);
 		a = "bye";
 
 	-Todos

@@ -33,7 +33,7 @@ public:
 	}
 
 	String(const String &my_string) { //Copy String 
-		length = my_string.len();
+		length = my_string.length;
 		data = new char[length];
 
 		for (uint i = 0; i < length; i++) {
@@ -46,16 +46,14 @@ public:
 		delete[] data;
 	} 
 
-	uint len() const { //If not exists length, returns -1
-		return length;
-	}
+
 
 	String operator=(const String &my_string) 
 	{
 		if (this == &my_string) return *this; //Optimize the process
 		delete data;
 
-		length = my_string.len();
+		length = my_string.length;
 		data = new char[length];
 
 		for (uint i = 0; i < length; i++) {
@@ -67,13 +65,13 @@ public:
 
 	String operator+= (const String &my_string) 
 	{
-		uint len = length + my_string.len();
+		uint len = length + my_string.length;
 		char* str = new char[len];
 
 		for (unsigned i = 0; i < length; i++)
 			str[i] = data[i];
 
-		for (unsigned i = 0; i < my_string.len(); i++)
+		for (unsigned i = 0; i < my_string.length; i++)
 			str[length + i] = my_string.data[i];
 
 		delete data;
@@ -83,11 +81,17 @@ public:
 	}
 
 	String operator+(const String &my_string) {
-		return String(my_string) + *this;
+		return (*this+ my_string);
 	}
 	bool operator ==(const String &my_string) const {
-		String str(my_string);
-		return (*this == str);
+		
+		if (length != my_string.length) return false;
+		uint n = 0;
+		while (length < n && data[n] == my_string.data[n]) //This while increment n only if data[n] == my_string[n]
+		{
+			n++;
+		}
+		return (n == length); //Then, return true if n has incremented so far to equal lenght of my_string
 	}
 
 	String operator+(const char* my_char) {

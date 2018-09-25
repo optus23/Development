@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--Config file-->
+<config>
+  <app>
+    <game_title> Zelda Breath of the Wild </game_title>
+    <FULLSCREEN value="false"/>
+    <BORDERLESS value="false"/>
+    <RESIZABLE value="true"/>
+    <FULLSCREEN_WINDOW value="false"/>
+    <TITLE name="Zelda Breath of the Wild"/>
+    <WIDTH value="1024"/>
+    <HEIGHT value="768"/>
+    <SCALE value="1"/>
+    
+    <standardString>
+      <SHORT_STR value="32"/>
+      <MID_STR value="255"/>
+      <HUGE_STR value="8192"/>
+    </standardString>
+  </app>
+
+  <auido>
+    <DEFAULT_MUSIC_FADE_TIME value="2.0f"/>
+    <MUSIC value="true"/>
+    <FX value="true"/>
+  </auido>
+  <input>
+    <NUM_KEYS value="352"/>
+    <NUM_MOUSE_BUTTONS value="5"/>
+    <LAST_KEYS_PRESSED_BUFFER value="50"/>
+  </input>
+  <renderer>
+    <VSYNC value="false"/>
+  </renderer>
+  
+  
+</config>

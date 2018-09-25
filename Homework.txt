@@ -1,0 +1,14 @@
+C++ Homework
+
+	-Class Vector3 done
+
+	-vec3.distance-squared()
+
+
+	-class String{
+		String a;
+		String b("hello");
+		Stringc(b);
+		a = "bye";
+
+	-Todos

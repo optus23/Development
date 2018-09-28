@@ -108,6 +108,9 @@ bool j1App::Start()
 		item = item->next;
 	}
 
+	if (!ret) LOG("Error, item deta not found");
+	if (!item) LOG("Items finished");
+
 	return ret;
 }
 

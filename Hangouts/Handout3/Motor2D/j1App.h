@@ -101,6 +101,6 @@ private:
 	mutable p2SString	save_game;
 };
 
-extern j1App* App; // No student is asking me about that ... odd :-S
+extern j1App* App; // No student is asking me about that ... odd :3
 
 #endif

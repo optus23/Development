@@ -11,7 +11,7 @@
 // ----------------------------------------------------
 
 
-struct hold_info
+struct tileset_info
 {
 	uint firstgrid = 1;
 	char* name = nullptr;
@@ -27,6 +27,7 @@ enum class map_renderer
 	left_down,
 	right_down,
 	left_up,
+	right_up,
 	error
 };
 
@@ -43,7 +44,7 @@ struct map_info
 	uint height = 0;
 	uint tilewidth = 0;
 	uint tileheight = 0;
-	map_orientation orientation = map_orientation::error;
+	//map_orientation orientation = map_orientation::error;
 };
 
 // ----------------------------------------------------
@@ -70,17 +71,22 @@ public:
 
 private:
 	
+	bool Load_map();
 
 public:
 
 	// TODO 1: Add your struct for map info as public for now
-	map_info map;
+	map_info* map;
+	p2List<tileset_info*> tille_set;
+	p2List<j1Map*> map_set;
+	
 
 private:
 
 	pugi::xml_document	map_file;
 	p2SString			folder;
 	bool				map_loaded;
+
 };
 
 #endif // __j1MAP_H__

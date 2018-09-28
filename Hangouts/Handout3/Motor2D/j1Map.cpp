@@ -19,6 +19,7 @@ j1Map::~j1Map()
 bool j1Map::Awake(pugi::xml_node& config)
 {
 	LOG("Loading Map Parser");
+
 	bool ret = true;
 
 	folder.create(config.child("folder").child_value());
@@ -39,14 +40,16 @@ void j1Map::Draw()
 // Called before quitting
 bool j1Map::CleanUp()
 {
+	bool ret = true;
 	LOG("Unloading map");
 
 	// TODO 2: Make sure you clean up any memory allocated
 	// from tilesets / map
-
 	map_file.reset();
+	tille_set.clear();
+	delete map;
 
-	return true;
+	return ret;
 }
 
 // Load new map
@@ -55,7 +58,7 @@ bool j1Map::Load(const char* file_name)
 	bool ret = true;
 	p2SString tmp("%s%s", folder.GetString(), file_name);
 
-	pugi::xml_parse_result result = map_file.load_file(tmp.GetString());
+	pugi::xml_parse_result result = map_file.load_file(tmp.GetString()); 
 
 	if(result == NULL)
 	{
@@ -67,8 +70,7 @@ bool j1Map::Load(const char* file_name)
 	{
 		// TODO 3: Create and call a private function to load and fill
 		// all your map data
-	
-
+		ret = Load_map();
 	}
 
 	// TODO 4: Create and call a private function to load a tileset
@@ -86,3 +88,17 @@ bool j1Map::Load(const char* file_name)
 	return ret;
 }
 
+bool j1Map::Load_map(){
+
+	bool ret = true;
+
+	p2List_item<j1Map*>* item;
+	item = map_set.start;
+
+	while (item != NULL && ret == true)	
+	{
+		item->data->Load(item->data->map_file.child("map").attribute);
+		item = item->next;
+	}
+	return ret;
+}

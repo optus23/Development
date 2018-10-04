@@ -15,8 +15,8 @@ struct MapLayer
 	uint width = 0u;
 	uint height = 0u;
 	uint *gids = nullptr;
-	
 
+	inline uint Get(uint x, uint y) const;
 
 	~MapLayer()
 	{
@@ -26,7 +26,6 @@ struct MapLayer
 
 
 	// TODO 6: Short function to get the value of x,y
-
 
 
 // ----------------------------------------------------

@@ -30,11 +30,27 @@ void j1Map::Draw()
 {
 	if(map_loaded == false)
 		return;
+	TileSet *tileset = data.tilesets.start->data;
+	MapLayer *layer = data.layersets.start->data;
 
-	// TODO 5: Prepare the loop to draw all tilesets + Blit
+	for (uint j = 0; j < data.height; j++)
+	{
+		for (uint i= 0; i < data.width; i++)
+		{
+			uint id = layer->gids[layer->Get(i, j)];
+			
+			iPoint map_position = MapToWorld(i, j);
+			SDL_Rect map_rect = tileset->GetTileRect(id);
+			App->render->Blit(tileset->texture, map_position.x, map_position.y, &map_rect);
+		}
+	}
 
 		// TODO 9: Complete the draw function
 
+}
+inline uint MapLayer::Get(uint x, uint y) const 
+{
+	return y * this->width + x;
 }
 
 
@@ -135,12 +151,21 @@ bool j1Map::Load(const char* file_name)
 
 	// TODO 4: Iterate all layers and load each of them
 	// Load layer info ----------------------------------------------
-	if (ret == true)
+	pugi::xml_node layer;
+	for (layer = map_file.child("map").child("layer"); layer && ret; layer = layer.next_sibling("layer"))
 	{
-		//ret = LoadLayer(pugi::xml_node& node, MapLayer* layer);
-	}
+		MapLayer* set = new MapLayer();
 
-	if(ret == true)
+		if (ret == true)
+		{
+			ret = LoadLayer(layer, set);
+		}
+		data.layersets.add(set);
+
+	}
+	
+
+	if(ret == true) //Here LOG function inform player about specifications of Tileset & MapLayer
 	{
 		LOG("Successfully parsed map XML file: %s", file_name);
 		LOG("width: %d height: %d", data.width, data.height);
@@ -157,9 +182,8 @@ bool j1Map::Load(const char* file_name)
 			item = item->next;
 		}
 
-		 
-		/*
-		p2List_item<MapLayer*>* item_layer = data.layers.start;
+
+		p2List_item<MapLayer*>* item_layer = data.layersets.start;
 		while(item_layer != NULL)
 		{
 			MapLayer* l = item_layer->data;
@@ -167,7 +191,7 @@ bool j1Map::Load(const char* file_name)
 			LOG("name: %s", l->name.GetString());
 			LOG("tile width: %d tile height: %d", l->width, l->height);
 			item_layer = item_layer->next;
-		}*/
+		}
 	}
 
 	map_loaded = ret;
@@ -281,6 +305,7 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 		set->texture = App->tex->Load(PATH(folder.GetString(), image.attribute("source").as_string()));
 		int w, h;
 		SDL_QueryTexture(set->texture, NULL, NULL, &w, &h);
+
 		set->tex_width = image.attribute("width").as_int();
 
 		if(set->tex_width <= 0)
@@ -305,6 +330,11 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 // TODO 3: Create the definition for a function that loads a single layer
 bool j1Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 {
+
+	pugi::xml_node layer_node = node.child("data").child("tile"); //When layer_node is defined, we definetly have acces to "data"
+
+	if (layer_node == NULL) return false;
+
 	layer->name.create(node.attribute("name").as_string());
 	layer->height = node.attribute("height").as_int();
 	layer->width = node.attribute("width").as_int();
@@ -312,9 +342,9 @@ bool j1Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	layer->gids = new uint[layer->width * layer->height];
 	memset(layer->gids, 0u, sizeof(uint)* layer->width * layer->height);
 
-	for (uint cont = 0; layer->gids != nullptr; cont++) {
-		layer->gids[cont] = node.attribute("gid").as_int();
-		/*node.next_sibling.child("tile");*/
+	for (uint cont = 0; cont < layer->width * layer->height; cont++) {
+		layer->gids[cont] = layer_node.attribute("gid").as_int();
+		layer_node = layer_node.next_sibling("tile"); //This change position to next tile
 	}
 	return true;
 }

@@ -52,9 +52,9 @@
  </tileset>
  <layer name="Capa de Patrones 1" width="50" height="15">
   <data>
-   <tile gid="32"/>
-   <tile gid="32"/>
-   <tile gid="32"/>
+   <tile gid="30"/>
+   <tile gid="30"/>
+   <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>

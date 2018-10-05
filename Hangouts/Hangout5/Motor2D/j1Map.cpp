@@ -30,44 +30,63 @@ void j1Map::Draw()
 {
 	if(map_loaded == false)
 		return;
-	TileSet *tileset = data.tilesets.start->data;
-	MapLayer *layer = data.layersets.start->data;
+	// TODO 5(old): Prepare the loop to draw all tilesets + Blit
+	MapLayer* layer = data.layers.start->data; // for now we just use the first layer and tileset
+	TileSet* tileset = data.tilesets.start->data;
 
 	for (uint j = 0; j < data.height; j++)
 	{
-		for (uint i= 0; i < data.width; i++)
+		for (uint i = 0; i < data.width; i++)
 		{
-			uint id = layer->gids[layer->Get(i, j)];
-			
+			uint id = layer->data[layer->Get(i, j)];
+
 			iPoint map_position = MapToWorld(i, j);
 			SDL_Rect map_rect = tileset->GetTileRect(id);
 			App->render->Blit(tileset->texture, map_position.x, map_position.y, &map_rect);
 		}
 	}
 
-		// TODO 9: Complete the draw function
+	
 
+	// TODO 10(old): Complete the draw function
 }
-inline uint MapLayer::Get(uint x, uint y) const 
-{
-	return y * this->width + x;
-}
-
 
 iPoint j1Map::MapToWorld(int x, int y) const
 {
-	iPoint ret;
+	iPoint ret(0,0);
+	
+	// TODO 8(old): Create a method that translates x,y coordinates from map positions to world positions
+	/*ret.x = x * data.tile_width;
+	ret.y = y * data.tile_height;*/
+	
+	// TODO 1: Add isometric map to world coordinates
+	ret.x = (x - y ) * data.tile_width*0.5f;
+	ret.y = (x + y) * data.tile_height*0.5f;
 
-	ret.x = x * data.tile_width;
-	ret.y = y * data.tile_height;
+	return ret;
+}
+
+
+iPoint j1Map::WorldToMap(int x, int y) const
+{
+	iPoint ret(0,0);
+	// TODO 2: Add orthographic world to map coordinates
+	int half_tile_width = data.tile_width*0.5;
+	int half_tile_height = data.tile_height*0.5;
+
+	ret.x = (x / half_tile_width + y / half_tile_height)*0.5f;
+	ret.y = (y / half_tile_height - x / half_tile_width)*0.5f;
+	// TODO 3: Add the case for isometric maps to WorldToMap
+
 
 	return ret;
 }
 
 SDL_Rect TileSet::GetTileRect(int id) const
 {
+	SDL_Rect rect = {0, 0, 0, 0};
+	// TODO 7(old): Create a method that receives a tile id and returns it's Rect
 	int relative_id = id - firstgid;
-	SDL_Rect rect;
 	rect.w = tile_width;
 	rect.h = tile_height;
 	rect.x = margin + ((rect.w + spacing) * (relative_id % num_tiles_width));
@@ -91,21 +110,19 @@ bool j1Map::CleanUp()
 	}
 	data.tilesets.clear();
 
-	// TODO 2: clean up all layer data
 	// Remove all layers
-	p2List_item<MapLayer*>* layer_item;
-	layer_item = data.layersets.start;
+	p2List_item<MapLayer*>* item2;
+	item2 = data.layers.start;
 
-	while (layer_item != NULL)
+	while(item2 != NULL)
 	{
-		RELEASE(layer_item->data);
-		layer_item = layer_item->next;
+		RELEASE(item2->data);
+		item2 = item2->next;
 	}
-	data.layersets.clear();
+	data.layers.clear();
 
 	// Clean up the pugui tree
 	map_file.reset();
-
 
 	return true;
 }
@@ -149,23 +166,19 @@ bool j1Map::Load(const char* file_name)
 		data.tilesets.add(set);
 	}
 
-	// TODO 4: Iterate all layers and load each of them
 	// Load layer info ----------------------------------------------
 	pugi::xml_node layer;
-	for (layer = map_file.child("map").child("layer"); layer && ret; layer = layer.next_sibling("layer"))
+	for(layer = map_file.child("map").child("layer"); layer && ret; layer = layer.next_sibling("layer"))
 	{
-		MapLayer* set = new MapLayer();
+		MapLayer* lay = new MapLayer();
 
-		if (ret == true)
-		{
-			ret = LoadLayer(layer, set);
-		}
-		data.layersets.add(set);
+		ret = LoadLayer(layer, lay);
 
+		if(ret == true)
+			data.layers.add(lay);
 	}
-	
 
-	if(ret == true) //Here LOG function inform player about specifications of Tileset & MapLayer
+	if(ret == true)
 	{
 		LOG("Successfully parsed map XML file: %s", file_name);
 		LOG("width: %d height: %d", data.width, data.height);
@@ -182,8 +195,7 @@ bool j1Map::Load(const char* file_name)
 			item = item->next;
 		}
 
-
-		p2List_item<MapLayer*>* item_layer = data.layersets.start;
+		p2List_item<MapLayer*>* item_layer = data.layers.start;
 		while(item_layer != NULL)
 		{
 			MapLayer* l = item_layer->data;
@@ -305,7 +317,6 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 		set->texture = App->tex->Load(PATH(folder.GetString(), image.attribute("source").as_string()));
 		int w, h;
 		SDL_QueryTexture(set->texture, NULL, NULL, &w, &h);
-
 		set->tex_width = image.attribute("width").as_int();
 
 		if(set->tex_width <= 0)
@@ -327,26 +338,32 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 	return ret;
 }
 
-// TODO 3: Create the definition for a function that loads a single layer
 bool j1Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 {
+	bool ret = true;
 
-	pugi::xml_node layer_node = node.child("data").child("tile"); //When layer_node is defined, we definetly have acces to "data"
-
-	if (layer_node == NULL) return false;
-
-	layer->name.create(node.attribute("name").as_string());
-	layer->height = node.attribute("height").as_int();
+	layer->name = node.attribute("name").as_string();
 	layer->width = node.attribute("width").as_int();
+	layer->height = node.attribute("height").as_int();
+	pugi::xml_node layer_data = node.child("data");
 
-	layer->gids = new uint[layer->width * layer->height];
-	memset(layer->gids, 0u, sizeof(uint)* layer->width * layer->height);
-
-	for (uint cont = 0; cont < layer->width * layer->height; cont++) {
-		layer->gids[cont] = layer_node.attribute("gid").as_int();
-		layer_node = layer_node.next_sibling("tile"); //This change position to next tile
+	if(layer_data == NULL)
+	{
+		LOG("Error parsing map xml file: Cannot find 'layer/data' tag.");
+		ret = false;
+		RELEASE(layer);
 	}
-	return true;
+	else
+	{
+		layer->data = new uint[layer->width*layer->height];
+		memset(layer->data, 0, layer->width*layer->height);
+
+		int i = 0;
+		for(pugi::xml_node tile = layer_data.child("tile"); tile; tile = tile.next_sibling("tile"))
+		{
+			layer->data[i++] = tile.attribute("gid").as_int(0);
+		}
+	}
+
+	return ret;
 }
-
-

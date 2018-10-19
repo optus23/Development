@@ -42,17 +42,21 @@ void j1Map::PropagateBFS()
 
 	// TODO 2: For each neighbor, if not visited, add it
 	// to the frontier queue and visited list
-	p2Queue<iPoint> *current;
+	p2Queue_item<iPoint> *current;
 
-
-	for (uint i = 0; i < 4; i++)
+	if (!frontier.Peek(NULL))
 	{
-		if (frontier.Count() != NULL)
+		for (uint i = 0; i < 4; ++i)
 		{
-			frontier.Push();
+			current = frontier.GetLast();
+			frontier.Pop(current);
+		}
+		if (visited.find(current) != NULL)
+		{
+			frontier.Push(current);
+			visited.add(current);
 		}
 	}
-	
 	
 
 

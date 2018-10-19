@@ -35,6 +35,8 @@ struct Properties
 	p2List<Property*>	list;
 };
 
+
+
 // ----------------------------------------------------
 struct MapLayer
 {

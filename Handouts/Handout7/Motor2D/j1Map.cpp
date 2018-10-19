@@ -45,6 +45,9 @@ void j1Map::PropagateBFS()
 	iPoint current;
 
 	iPoint neightbor[4];
+
+	p2Queue<iPoint>		Path;
+
 	neightbor[0] = { 1, 0 };
 	neightbor[1] = { -1, 0 };
 	neightbor[2] = { 0, -1 };
@@ -57,20 +60,21 @@ void j1Map::PropagateBFS()
 		frontier.Pop(current);
 		iPoint current_neightbor;
 
+
 		for (uint i = 0; i < 4; ++i)
 		{
 			current_neightbor.x = neightbor[i].x + current.x;
 			current_neightbor.y = neightbor[i].y + current.y;
 			if (visited.find(current_neightbor) == -1 && IsWalkable(current_neightbor.x, current_neightbor.y))
 			{
+				
 				frontier.Push(current_neightbor);
+				Path.Push(current_neightbor);
 				visited.add(current_neightbor);
 			}
 		}
 	}
-		
-	
-	
+
 
 
 }
@@ -113,7 +117,7 @@ bool j1Map::IsWalkable(int x, int y) const
 {
 	// TODO 3: return true only if x and y are within map limits
 	// and the tile is walkable (tile id 0 in the navigation layer)
-	if (y < data.height && y >= 0 && x < data.width && x >= 0)
+	if (y < data.height && y >= 0 && x < data.width && x >= 0 && data.layers.end->data->Get(x,y) == 0)
 	{
 		return true;
 	}

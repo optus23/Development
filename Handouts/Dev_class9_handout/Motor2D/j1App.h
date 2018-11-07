@@ -105,6 +105,16 @@ private:
 	p2SString			load_game;
 	mutable p2SString	save_game;
 
+	j1PerfTimer				perf_timer;
+	j1Timer					frame_time;
+	j1Timer					start_time;
+	j1Timer					last_sec_frame_time;
+	uint					last_sec_frame_count = 0;
+	uint					prev_last_sec_frame_count = 0;
+	uint64					frame_count = 0;
+	uint					framerate_cap = 0;
+	float					dt = 0;
+
 };
 
 extern j1App* App; // No student is asking me about that ... odd :-S

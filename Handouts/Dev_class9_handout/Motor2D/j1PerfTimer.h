@@ -18,7 +18,6 @@ public:
 private:
 	uint64	started_at;
 	static uint64 frequency;
-	p2SString	name;
 };
 
 #endif //__j1PERFTIMER_H__

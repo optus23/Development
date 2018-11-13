@@ -14,6 +14,7 @@
 #include "j1Pathfinding.h"
 #include "j1App.h"
 #include "j1PerfTimer.h"
+#include "j1Timer.h"
 
 // TODO 3: Measure the amount of ms that takes to execute:
 // App constructor, Awake, Start and CleanUp
